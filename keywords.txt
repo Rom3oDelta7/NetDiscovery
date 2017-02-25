@@ -1,0 +1,23 @@
+#######################################
+# Syntax Coloring Map For NetDiscovery Library
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+NetDiscovery	KEYWORD1
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+begin	KEYWORD2
+listen	KEYWORD2
+announce	KEYWORD2
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+ND_MCAST_PORT_LOW LITERAL1
+ND_MCAST_PORT_HIGH LITERAL1
