@@ -42,7 +42,7 @@ Parameters are as follows:
 |_ackPacket_|pointer to the data to be returned in an ACK packet to the sender after an accouncement packet has been received (e.g. topology information __sent__)|
 |_ackPacketSize_|number of bytes in the ACK packet|
 
-Returns __true__ if an announcement packet was received and and ACK packet was sent, else __false__.
+Returns __true__ if an announcement packet was received and an ACK packet was sent, else __false__.
 
 ```C++
 bool NetDiscovery::announce (const IPAddress localIP, const void *packet, const size_t packetSize, void *ackPacket, const size_t ackPacketSize);
@@ -59,7 +59,7 @@ Parameters are as follows:
 |_ackPacket_|pointer to the incoming announcement acknowledgement packet (e.g. topology information __received__)|
 |_ackPacketSize_|number of bytes in the ACK packet|
 
-Returns __true__ if the an announcement packet was sent and an acknowledgement packet was successfully read, else __false__.
+Returns __true__ if an announcement packet was sent and an acknowledgement packet was successfully read, else __false__.
 
 # Examples
 The _examples_ folder contains sample code for a receiver (master) and a sender (slave/client) that exchange their respective IP addresses.
