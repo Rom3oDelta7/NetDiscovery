@@ -1,6 +1,9 @@
 /*
  Simple multicast test - sender, which announces its presence on the network
  This code would be on the client, for example
+ 
+ To test hub-and-spoke, the other device should run the mcast_rcv sketch. For peer-to-peer, simply run
+ two instances of this sketch on different devices.
 
  Reference: https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi/src
  */
@@ -38,21 +41,24 @@ void setup()
 	}
 }
 
+/*
+ simple test where the packet contains just the IP address
+*/
 void loop()
 {
-	IPAddress local = WiFi.localIP(), remote;
+	Payload local, remote;                        // packet payloads
 
 	DEBUG_MSG(1, F("Sender starting"), "");
+	local.address = WiFi.localIP();
 	while ( true ) {
 		// announce our presence - this may need to happen multiple times until the receiver acknowledges us
-		if ( discovery.announce(local, (void *)&local, sizeof(local), (void *)&remote, sizeof(remote)) ) {
-			DEBUG_MSG(1, F("Discovered remote"), remote);
+		Serial.print(F("."));
+		if ( discovery.announce(local.address, (void *)&local, sizeof(local), (void *)&remote, sizeof(remote)) ) {
+			DEBUG_MSG(1, F("Discovered remote"), (IPAddress)remote.address);
 			break;
-		} else {
-			Serial.print(F("."));
-			yield();
-			delay(1000);
-		}
+		} 
+		yield();
+		delay(1000);
 	}
 	Serial.println();
 	while ( true ) delay(1000);

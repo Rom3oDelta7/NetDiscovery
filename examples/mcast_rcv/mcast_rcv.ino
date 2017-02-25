@@ -1,6 +1,6 @@
 /*
  Simple multicast test - receiver, which is listening for other device to announce their presence
- This code would be on the server, for example
+ This code would be on the server (hub), for example
 
  Reference: https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi/src
  */
@@ -41,16 +41,18 @@ void setup()
 /*
  simple test where the packet contains just the IP address
 */
+
 void loop()
 {
+	Payload local, remote;                        // packet payloads
+	
 	DEBUG_MSG(1, F("RECEIVER listening"), "");
-	IPAddress local = WiFi.localIP(), remote;
-
+	local.address = WiFi.localIP();
 	while ( true ) {
 		// listen for incoming packets
 		Serial.print(".");
-		if ( discovery.listen(local, (void *)&remote, sizeof(remote), (void *)&local, sizeof(local)) ) {
-			DEBUG_MSG(1, F("Discovered remote"), remote);
+		if ( discovery.listen(local.address, (void *)&remote, sizeof(remote), (void *)&local, sizeof(local)) ) {
+			DEBUG_MSG(1, F("Discovered remote"), (IPAddress)remote.address);
 			break;
 		}
 		yield();
