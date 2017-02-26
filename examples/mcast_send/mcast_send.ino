@@ -46,16 +46,18 @@ void setup()
 void loop()
 {
 	ND_Packet localPacket, remotePacket;
+	IPAddress localIP = WiFi.localIP();
+	bool      announced = false;
 
-	DEBUG_MSG(1, F("Sender starting"), "");
-	localPacket.payload[0] = 0x7F;                 // we send this valure - expect 0x3F to be returned
-	while ( true ) {
+	localPacket.payload[0] = localIP[3];                 // unique peer ID in the case of multipe peers
+	DEBUG_MSG(1, F("Sender starting"), localIP[3]);
+	while ( !announced ) {
 		// announce our presence - this may need to happen multiple times until the receiver acknowledges us
 		Serial.print(F("."));
 		if ( discovery.announce(&localPacket) ) {
-			if ( discovery.listen(ND_ACK, &remotePacket) ) {
+			if ( discovery.listen(&remotePacket) == ND_ACK ) {
 				DEBUG_MSG(1, "ACK", "received");
-				if ( remotePacket.payload[0] == 0x3F ) {
+				if ( remotePacket.payload[0] == localIP[3] ) {    // is this ACK for us?
 					Serial.print(F("Discovered device at "));
 					Serial.println((IPAddress)remotePacket.addressIP);
 					Serial.print(F("Remote MAC: "));
@@ -65,8 +67,8 @@ void loop()
 							Serial.print(".");
 						}
 					}
+					announced = true;
 					Serial.println();
-					break;
 				}
 			}
 		} 

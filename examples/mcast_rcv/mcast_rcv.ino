@@ -9,6 +9,7 @@
 #include <WiFiUdp.h>
 #include "NetDiscovery.h"
 #include "common.h"
+#include <array>
 
 //#define DEBUG 3                  // define as minimum desired debug level, or comment out to disable debug statements
 
@@ -39,36 +40,43 @@ void setup()
 }
 
 /*
- simple test where the packet contains just the IP address
+ simple test where the packet contains just the IP address and an ID
+ loops forever - your application logic would need to determine how the loop is terminated
 */
 void loop()
 {
 	ND_Packet localPacket, remotePacket;
+	std::array<bool, 256> senderACK;
+
 
 	DEBUG_MSG(1, F("RECEIVER listening"), "");
+	senderACK.fill(false);
 	while ( true ) {
 		// listen for announcement packets & ACK it
 		Serial.print(".");
-		if ( discovery.listen(ND_ANNOUNCE, &remotePacket) && (remotePacket.payload[0] == 0x7F) ) {
-			localPacket.payload[0] = 0x3F;     // simple handshake: confirm  that this is the correct responder
-			if ( discovery.ack(&localPacket) ) {
-				Serial.print(F("Discovered device at "));
-				Serial.println((IPAddress)remotePacket.addressIP);
-				Serial.print(F("Remote MAC: "));
-				for ( int i = 0; i < 6; i++ ) {
-					Serial.print(remotePacket.addressMAC[i], HEX);
-					if ( i < 5 ) {
-						Serial.print(".");
+		if ( discovery.listen(&remotePacket) == ND_ANNOUNCE ) {
+			uint8_t senderID = remotePacket.payload[0];           // ID is the last octet in the IP address for unique identification
+
+			if ( !senderACK[senderID] ) {
+				// we have not yet acknowledged this sender
+				localPacket.payload[0] = senderID;                 // return sender's ID
+				if ( discovery.ack(&localPacket) ) {
+					Serial.print(F("Discovered device at "));
+					Serial.println((IPAddress)remotePacket.addressIP);
+					Serial.print(F("Remote MAC: "));
+					for ( int i = 0; i < WL_MAC_ADDR_LENGTH; i++ ) {
+						Serial.print(remotePacket.addressMAC[i], HEX);
+						if ( i < WL_MAC_ADDR_LENGTH - 1 ) {
+							Serial.print(".");
+						}
 					}
+					senderACK[senderID] = true;
+					Serial.println();
 				}
-				Serial.println();
-				break;
 			}
+			
 		}
 		yield();
-		delay(1000);
-	}
-	while ( true ) {
 		delay(1000);
 	}
 }

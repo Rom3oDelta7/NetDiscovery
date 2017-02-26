@@ -31,26 +31,24 @@
 #define ND_MCAST_PORT_HIGH   49151         // highest valid port number
 
 // define discovery packet types
-typedef enum {
-	ND_ANNOUNCE = 0x11,
-   ND_ACK = 0x22,
-	ND_INFO = 0x33
-} ND_PacketType;
+#define ND_ANNOUNCE          0x11
+#define ND_ACK               0x22
+#define ND_INFO              0x33              	
 
 typedef struct {
-	ND_PacketType  packetType;
-	IPAddress      addressIP;	                // local IP address
-	uint8_t        addressMAC[6];	             // local MAC address
-	uint8_t        payload[8];                 // user-defined payload component
+	uint8_t        packetType;
+	IPAddress      addressIP;	                         // local IP address
+	uint8_t        addressMAC[WL_MAC_ADDR_LENGTH];	    // local MAC address
+	uint8_t        payload[9];                          // user-defined payload component (pad to 4 byte boundry)
 } ND_Packet;
 
 class NetDiscovery {
 public:
 	// user functions
-	bool begin (const IPAddress multicastIP, const int mcastPort);
-	bool listen (const ND_PacketType packetType, ND_Packet *packet);
-	bool announce (const ND_Packet *packet);
-	bool ack (const ND_Packet *packet);
+	bool    begin (const IPAddress multicastIP, const int mcastPort);
+	uint8_t listen (ND_Packet *packet);
+	bool    announce (const ND_Packet *packet);
+	bool    ack (const ND_Packet *packet);
 
 
 private:

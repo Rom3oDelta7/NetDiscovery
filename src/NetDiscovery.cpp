@@ -50,40 +50,39 @@ bool NetDiscovery::begin (const IPAddress multicastIP, const int mcastPort) {
 
 
 /*
- listen for a packet of the given type
- if received, the packet contents will be copied to the given address and a value of true will be returned
+ listen for a packet
+ if received, the packet contents will be copied to the given address and the type will be returned, otherwise 0
 */
-bool NetDiscovery::listen (const ND_PacketType packetType, ND_Packet *packet) {
-	bool returnValue = false;
-	int  rcvSize = _mcast.parsePacket();                // get next mcast UDP packet
+uint8_t NetDiscovery::listen (ND_Packet *packet) {
+	uint8_t pktType = 0;
+	int     rcvSize = _mcast.parsePacket();                // get next mcast UDP packet
 
 	if ( rcvSize ) {
 		// packet received
+		
 		ND_DEBUG_MSG(2, F("Listen: Received packet of size"), rcvSize);
 		ND_DEBUG_MSG(2, F("Listen: Received from"), _mcast.remoteIP());
 		ND_DEBUG_MSG(2, F("Listen: Destination IP"), _mcast.destinationIP());
 		ND_DEBUG_MSG(2, F("Listen: Remote port"), _mcast.remotePort());
 		
-
+		// check that this is the packet we want but leave the stream undisrurbed if it isn't
 		if ( (_mcast.destinationIP() == _mcastIP) && (_mcast.remotePort() == _mcastPort) ) {
 			// multicast group match
 			int bytesRead;
 			ND_Packet tmpPacket;
-
+			
 			if ( (bytesRead = _mcast.read((uint8_t *)&tmpPacket, sizeof(ND_Packet))) == sizeof(ND_Packet) ) {
-				ND_DEBUG_MSG(2, F("Listen: Packet type"), tmpPacket.packetType);
-				if ( tmpPacket.packetType == packetType ) {
-					ND_DEBUG_MSG(3, F("Listen"), F("packet received"));
-					memcpy((void *)packet, (void *)&tmpPacket, sizeof(ND_Packet));
-					returnValue = true;
-				}
+				pktType = tmpPacket.packetType;
+				ND_DEBUG_MSG(3, F("Listen: packet type"), pktType);
+				memcpy((void *)packet, (void *)&tmpPacket, sizeof(ND_Packet));
+				_mcast.flush();                    // should not be necessary  - just being paranoid
 			} else {
 				ND_DEBUG_MSG(1, F("Listen: packet read error. Count"), bytesRead);
 				_mcast.flush();
 			}
 		}
 	}
-	return returnValue;
+	return pktType;
 }
 
 /*
