@@ -9,9 +9,3 @@ Common definitions
 
 #define SSID           "<enter SSID here>"
 #define PASSWORD       "<enter password here>"
-
-
-// this data structure contains the information to be exchanged between devices
-typedef struct {
-	IPAddress address;
-} Payload;
