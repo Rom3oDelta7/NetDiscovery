@@ -2,8 +2,7 @@
  Simple multicast test - sender, which announces its presence on the network
  This code would be on the client, for example
  
- To test hub-and-spoke, the other device should run the mcast_rcv sketch. For peer-to-peer, simply run
- two instances of this sketch on different devices.
+ To test hub-and-spoke, the other device should run the mcast_rcv sketch. 
 
  Reference: https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi/src
  */
@@ -35,31 +34,44 @@ void setup()
 	Serial.println();
 	DEBUG_MSG(1, F("SENDER Connected. Local IP"), WiFi.localIP());
 
-	if ( !discovery.begin(WiFi.localIP(), mcastIP, MCAST_PORT) ) {       // join mcast group
+	if ( !discovery.begin(mcastIP, MCAST_PORT) ) {       // join mcast group
 		DEBUG_MSG(1, F("Cannot initialize discovery mcast group"), mcastIP);
 		while ( true ) delay(1000);               // ESP will get a WDT reset if you don't have something in the loop
 	}
 }
 
 /*
- simple test where the packet contains just the IP address
+ simple test with a simple user payload
 */
 void loop()
 {
-	Payload local, remote;                        // packet payloads
+	ND_Packet localPacket, remotePacket;
 
 	DEBUG_MSG(1, F("Sender starting"), "");
-	local.address = WiFi.localIP();
+	localPacket.payload[0] = 0x7F;                 // we send this valure - expect 0x3F to be returned
 	while ( true ) {
 		// announce our presence - this may need to happen multiple times until the receiver acknowledges us
 		Serial.print(F("."));
-		if ( discovery.announce(local.address, (void *)&local, sizeof(local), (void *)&remote, sizeof(remote)) ) {
-			DEBUG_MSG(1, F("Discovered remote"), (IPAddress)remote.address);
-			break;
+		if ( discovery.announce(&localPacket) ) {
+			if ( discovery.listen(ND_ACK, &remotePacket) ) {
+				DEBUG_MSG(1, "ACK", "received");
+				if ( remotePacket.payload[0] == 0x3F ) {
+					Serial.print(F("Discovered device at "));
+					Serial.println((IPAddress)remotePacket.addressIP);
+					Serial.print("Remote MAC: ");
+					for ( int i = 0; i < 6; i++ ) {
+						Serial.print(remotePacket.addressMAC[i], HEX);
+						if ( i < 5 ) {
+							Serial.print(".");
+						}
+					}
+					Serial.println();
+					break;
+				}
+			}
 		} 
 		yield();
 		delay(1000);
 	}
-	Serial.println();
 	while ( true ) delay(1000);
 }

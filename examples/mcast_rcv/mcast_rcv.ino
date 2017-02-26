@@ -32,7 +32,7 @@ void setup()
 	Serial.println();
 	DEBUG_MSG(1, F("RECEIVER Connected. Local IP"), WiFi.localIP());
 
-	if ( !discovery.begin(WiFi.localIP(), mcastIP, MCAST_PORT) ) {       // join mcast group
+	if ( !discovery.begin(mcastIP, MCAST_PORT) ) {       // join mcast group
 		DEBUG_MSG(1, F("Cannot initialize discovery mcast group"), mcastIP);
 		while ( true ) delay(1000);
 	}
@@ -41,23 +41,34 @@ void setup()
 /*
  simple test where the packet contains just the IP address
 */
-
 void loop()
 {
-	Payload local, remote;                        // packet payloads
-	
+	ND_Packet localPacket, remotePacket;
+
 	DEBUG_MSG(1, F("RECEIVER listening"), "");
-	local.address = WiFi.localIP();
 	while ( true ) {
-		// listen for incoming packets
+		// listen for announcement packets & ACK it
 		Serial.print(".");
-		if ( discovery.listen(local.address, (void *)&remote, sizeof(remote), (void *)&local, sizeof(local)) ) {
-			DEBUG_MSG(1, F("Discovered remote"), (IPAddress)remote.address);
-			break;
+		if ( discovery.listen(ND_ANNOUNCE, &remotePacket) && (remotePacket.payload[0] == 0x7F) ) {
+			localPacket.payload[0] = 0x3F;     // simple handshake example
+			if ( discovery.ack(&localPacket) ) {
+				Serial.print(F("Discovered device at "));
+				Serial.println((IPAddress)remotePacket.addressIP);
+				Serial.print("Remote MAC: ");
+				for ( int i = 0; i < 6; i++ ) {
+					Serial.print(remotePacket.addressMAC[i], HEX);
+					if ( i < 5 ) {
+						Serial.print(".");
+					}
+				}
+				Serial.println();
+				break;
+			}
 		}
 		yield();
 		delay(1000);
 	}
-	Serial.println();
-	while ( true ) delay(1000);
+	while ( true ) {
+		delay(1000);
+	}
 }
