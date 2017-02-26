@@ -3,8 +3,8 @@ NetDiscovery is an Arduino library for the ESP8266 that implements a simple UDP 
 This enables devices on a network to find each other and exchange inforamtion to facilitate their communication.
 The simplest example of this is a set of devices that need to commuicate through IP but don't
 initially know the IP addresses of the other devices.
-You can exchange any type of information: you call the functions with a pointer to the data you want to be copied into either the announcement or ACK packets.
-This library can be implemented using a master/slave or peer-to-peer topology.
+Eight bytes of application-specific information may be added to the packet payload field for exchange amongst the devices.
+This library can be used to implement a master/slave or peer-to-peer topology for discovery.
 
 # Programming Interface
 ## Initialization
@@ -14,55 +14,64 @@ NetDiscovery discovery;
 ```
 ## Functions
 ```C++
-bool NetDiscovery::begin (const IPAddress localIP, const IPAddress multicastIP, const int mcastPort);
+bool NetDiscovery::begin (const IPAddress multicastIP, const int mcastPort);
 ```
 Initialize the multicast group.
 Parameters are as follows:
 
 |Parameter|Purpose|
 |---|---|
-|_localIP_|the IP address of the device calling the function|
 |_multicastIP_|the UDP multicast group address. This must be of the form 239.X.Y.Z where X, Y, and Z are within the range 1:255.|
 |_mcastPort_|the UDP multicast port number. This must be a number within the range ND_MCAST_PORT_LOW:ND_MCAST_PORT_HIGH.| 
 
 Returns __true__ if the multicast group was successfully established, else __false__.
 
 ```C++
-bool NetDiscovery::listen (const IPAddress localIP, void *packet, const size_t packetSize, const void *ackPacket, const size_t ackPacketSize);
+bool NetDiscovery::listen (const ND_PacketType packetType, ND_Packet *packet);
 ```
 
-Listen for incoming announcement packets, and send an acqknowledgement (ACK) packet when one has been received.
+Listen for an incoming packet. This function does not wait for a packet to arrive, and returns if one is not immediately available.
 Parameters are as follows:
 
 |Parameter|Purpose|
 |---|---|
-|_localIP_|the IP address of the device calling the function|
-|_packet_|incoming annoncement packets will be copied to this address (topology information __received__)|
-|_packetSize_|number of bytes to be copied from the incoming multicast packet to the address pointed to by _packet_|
-|_ackPacket_|pointer to the data to be returned in an ACK packet to the sender after an accouncement packet has been received (e.g. topology information __sent__)|
-|_ackPacketSize_|number of bytes in the ACK packet|
+|_packetType_|the type of packet to listen for|
+|_packet_|pointer to the packet received from the sender, which may be an announcement or ack packet
 
-Returns __true__ if an announcement packet was received and an ACK packet was sent, else __false__.
+Returns __true__ if a packet of the given type was received, else __false__.
 
 ```C++
-bool NetDiscovery::announce (const IPAddress localIP, const void *packet, const size_t packetSize, void *ackPacket, const size_t ackPacketSize);
+bool NetDiscovery::announce (const ND_Packet *packet);
 ```
 
-Send an announcement packet and get the corresponding ACK packet.
+Send an announcement packet.
 Parameters are as follows:
 
 |Parameter|Purpose|
 |---|---|
-|_localIP_|the IP address of the device calling the function|
-|_packet_|pointer to the data to be copied into the announcement packet (topology information __sent__)|
-|_packetSize_|number of bytes to be copied|
-|_ackPacket_|pointer to the incoming announcement acknowledgement packet (e.g. topology information __received__)|
-|_ackPacketSize_|number of bytes in the ACK packet|
+|_packet_|pointer to the packet containing the user payload to be transmitted in the annoucement packet|
 
-Returns __true__ if an announcement packet was sent and an acknowledgement packet was successfully read, else __false__.
+Note that the _announce_ function will fill in the packet header fields;
+the packet pointer supplied is only for the purposes of copying the user payload.
+Returns __true__ if an announcement packet was sent, else __false__.
+
+```C++
+bool NetDiscovery::ack (const ND_Packet *packet);
+```
+
+Send an acknowledgement packet.
+Parameters are as follows:
+
+|Parameter|Purpose|
+|---|---|
+|_packet_|pointer to the packet containing the user payload to be transmitted in the annoucement packet|
+
+Note that the _ack_ function will fill in the packet header fields;
+the packet pointer supplied is only for the purposes of copying the user payload.
+Returns __true__ if an ACK packet was sent, else __false__.
 
 # Examples
-The _examples_ folder contains sample code for a receiver (master) and a sender (slave/client) that exchange their respective IP addresses.
+The _examples_ folder contains sample code for a receiver (master) and a sender (slave/client) that exchange their respective IP and MAC addresses.
 Each must be downloaded to its own ESP8266 with both running on the same local WiFi network.
 The receiver (master) will listen for announcement packets and ACK them;
 the sender will announce itself and then get the ACK.
