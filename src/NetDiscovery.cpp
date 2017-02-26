@@ -1,6 +1,13 @@
 /*
 Network Discovery Library
 
+NetDiscovery is an Arduino library for the ESP8266 that implements a simple UDP multicast discovery protocol on a WiFi network.
+This enables devices on a network to find each other and exchange inforamtion to facilitate their communication.
+The simplest example of this is a set of devices that need to commuicate through IP but don't
+initially know the IP addresses of the other devices.
+Eight bytes of application-specific information may be added to the packet payload field for exchange amongst the devices.
+This library can be used to implement a master/slave or peer-to-peer topology for discovery.
+
 Copyright 2017 Rob Redford
 This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
 To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/.
@@ -80,9 +87,9 @@ bool NetDiscovery::listen (const ND_PacketType packetType, ND_Packet *packet) {
 }
 
 /*
-send announcement packet, copying in provided user payload
-all fields except the user-defined section are set by this function
-returns true if the packet was successfully sent
+ send announcement packet, copying in provided user payload
+ all fields except the user-defined section are set by this function
+ returns true if the packet was successfully sent
 */
 bool NetDiscovery::announce (const ND_Packet *packet) {
 	bool      returnValue = false;

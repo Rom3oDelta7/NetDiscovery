@@ -19,7 +19,7 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
-#define ND_DEBUG 3
+//#define ND_DEBUG 3                 // define as minimum desired debug level, or comment out to disable debug statements
 
 #ifdef ND_DEBUG
 #define ND_DEBUG_MSG(L, H, M)	       if ((L) <= ND_DEBUG) {Serial.print("ND_DEBUG> "); Serial.print(H); Serial.print(": "); Serial.println(M);}

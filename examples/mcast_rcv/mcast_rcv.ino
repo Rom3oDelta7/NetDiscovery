@@ -10,7 +10,7 @@
 #include "NetDiscovery.h"
 #include "common.h"
 
-#define DEBUG 3
+//#define DEBUG 3                  // define as minimum desired debug level, or comment out to disable debug statements
 
 #ifdef DEBUG
 #define DEBUG_MSG(L, H, M)	       if ((L) <= DEBUG) {Serial.print("DEBUG> "); Serial.print(H); Serial.print(": "); Serial.println(M);}
@@ -50,11 +50,11 @@ void loop()
 		// listen for announcement packets & ACK it
 		Serial.print(".");
 		if ( discovery.listen(ND_ANNOUNCE, &remotePacket) && (remotePacket.payload[0] == 0x7F) ) {
-			localPacket.payload[0] = 0x3F;     // simple handshake example
+			localPacket.payload[0] = 0x3F;     // simple handshake: confirm  that this is the correct responder
 			if ( discovery.ack(&localPacket) ) {
 				Serial.print(F("Discovered device at "));
 				Serial.println((IPAddress)remotePacket.addressIP);
-				Serial.print("Remote MAC: ");
+				Serial.print(F("Remote MAC: "));
 				for ( int i = 0; i < 6; i++ ) {
 					Serial.print(remotePacket.addressMAC[i], HEX);
 					if ( i < 5 ) {
