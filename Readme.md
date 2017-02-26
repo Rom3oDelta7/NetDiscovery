@@ -86,13 +86,20 @@ Note that the _send_ function will fill in the packet header fields;
 the packet pointer supplied is only for the purposes of copying the user payload.
 Returns __true__ if the packet was sent, else __false__.
 
+```C++
+void NetDiscovery::send (void);
+```
+
+Terminates the UDP multicast stream and releases the corresponding resources.
+
 
 # Examples
 The _examples_ folder contains sample code for a receiver (master) and a sender (slave/client) that exchange their respective IP and MAC addresses.
 Each must be downloaded to its own ESP8266 with both running on the same local WiFi network.
 The receiver (master) will listen for announcement packets and ACK them;
 the sender will announce itself and then get the ACK.
-For simplicity, the loop terminates once each device has discovered the other.
+
+In addition, there is a peer-to-peer example, where you load and run the same sketch on at least 2 ESPs.
 
 # Installation
 
