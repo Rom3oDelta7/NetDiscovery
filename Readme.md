@@ -70,6 +70,23 @@ Note that the _ack_ function will fill in the packet header fields;
 the packet pointer supplied is only for the purposes of copying the user payload.
 Returns __true__ if an ACK packet was sent, else __false__.
 
+```C++
+bool NetDiscovery::send (const uint8_t packetType, const ND_Packet *packet);
+```
+
+Lower level function to send a packet of an arbitrary type.
+Parameters are as follows:
+
+|Parameter|Purpose|
+|---|---|
+|_packetType_|packet type (see _NetDiscovery.h_) or you may define your own.|
+|_packet_|pointer to the packet containing the user payload to be transmitted in the annoucement packet|
+
+Note that the _send_ function will fill in the packet header fields;
+the packet pointer supplied is only for the purposes of copying the user payload.
+Returns __true__ if the packet was sent, else __false__.
+
+
 # Examples
 The _examples_ folder contains sample code for a receiver (master) and a sender (slave/client) that exchange their respective IP and MAC addresses.
 Each must be downloaded to its own ESP8266 with both running on the same local WiFi network.
