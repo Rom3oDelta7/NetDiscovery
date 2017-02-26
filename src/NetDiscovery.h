@@ -47,6 +47,7 @@ public:
 	// user functions
 	bool    begin (const IPAddress multicastIP, const int mcastPort);
 	uint8_t listen (ND_Packet *packet);
+	bool    send (const uint8_t packetType, const ND_Packet *packet);
 	bool    announce (const ND_Packet *packet);
 	bool    ack (const ND_Packet *packet);
 

@@ -86,38 +86,47 @@ uint8_t NetDiscovery::listen (ND_Packet *packet) {
 }
 
 /*
- send announcement packet, copying in provided user payload
+ send a packet of the specified type, copying in provided user payload
  all fields except the user-defined section are set by this function
  returns true if the packet was successfully sent
 */
-bool NetDiscovery::announce (const ND_Packet *packet) {
+bool NetDiscovery::send (const uint8_t packetType, const ND_Packet *packet) {
 	bool      returnValue = false;
 	ND_Packet tmpPacket;
 
-	// send announcement packet
+	// send a packet
 	if ( _mcast.beginPacketMulticast(_mcastIP, _mcastPort, _localIP) ) {
 		size_t count;
 
 		// initialize packet header
-		tmpPacket.packetType = ND_ANNOUNCE;
+		tmpPacket.packetType = packetType;
 		tmpPacket.addressIP = _localIP;
 		memcpy((void*)&tmpPacket.addressMAC[0], (void*)&_localMAC[0], sizeof(tmpPacket.addressMAC));
 		// get user payload
 		memcpy((void *)&tmpPacket.payload[0], (void *)packet->payload, sizeof(tmpPacket.payload));
 		if ( (count = _mcast.write((uint8_t *)&tmpPacket, sizeof(ND_Packet))) == sizeof(ND_Packet) ) {
 			if ( _mcast.endPacket() ) {
-				ND_DEBUG_MSG(3, F("Announce"), F("sent OK"));
+				ND_DEBUG_MSG(3, F("Send"), F("sent OK"));
 				returnValue = true;
 			} else {
-				ND_DEBUG_MSG(1, F("Announce"), F("Cannot send packet"));
+				ND_DEBUG_MSG(1, F("Send"), F("Cannot send packet"));
 			}
 		} else {
-			ND_DEBUG_MSG(1, F("Announce: write failed"), count);
+			ND_DEBUG_MSG(1, F("Send: write failed"), count);
 		}
 	} else {
-		ND_DEBUG_MSG(1, F("Announce"), F("Cannot create announcement packet"));
+		ND_DEBUG_MSG(1, F("Send"), F("Cannot create packet"));
 	}
 	return returnValue;
+}
+
+/*
+ send announcement packet, copying in provided user payload
+ all fields except the user-defined section are set by this function
+ returns true if the packet was successfully sent
+*/
+bool NetDiscovery::announce (const ND_Packet *packet) {
+	return send(ND_ANNOUNCE, packet);
 }
 
 
@@ -127,31 +136,7 @@ bool NetDiscovery::announce (const ND_Packet *packet) {
  returns true if the packet was successfully sent
 */
 bool NetDiscovery::ack (const ND_Packet *packet) {
-	bool      returnValue = false;
-	ND_Packet tmpPacket;
-
-	if ( _mcast.beginPacketMulticast(_mcastIP, _mcastPort, _localIP) ) {
-		size_t count;
-
-		// initialize packet header
-		tmpPacket.packetType = ND_ACK;
-		tmpPacket.addressIP = _localIP;
-		memcpy((void*)&tmpPacket.addressMAC[0], (void*)&_localMAC[0], sizeof(tmpPacket.addressMAC));
-		// get user payload
-		memcpy((void *)&tmpPacket.payload[0], (void *)&packet->payload[0], sizeof(tmpPacket.payload));
-		if ( (count = _mcast.write((uint8_t *)&tmpPacket, sizeof(ND_Packet))) == sizeof(ND_Packet) ) {
-			if ( _mcast.endPacket() ) {
-				ND_DEBUG_MSG(3, F("Ack"), F("sent OK"));
-				returnValue = true;
-			} else {
-				ND_DEBUG_MSG(1, F("Ack"), F("Cannot send packet"));
-			}
-		} else {
-			ND_DEBUG_MSG(1, F("Ack: write failed"), count);
-		}
-	} else {
-		ND_DEBUG_MSG(1, F("Ack"), F("Cannot create ACK packet"));
-	}
-	return returnValue;
+	return send(ND_ACK, packet);
 }
+
 

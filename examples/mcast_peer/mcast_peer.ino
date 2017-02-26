@@ -13,7 +13,7 @@ this code on each device you want to be discovered.
 #include "NetDiscovery.h"
 #include "common.h"
 
-#define DEBUG 3                  // define as minimum desired debug level, or comment out to disable debug statements
+//#define DEBUG 3                  // define as minimum desired debug level, or comment out to disable debug statements
 
 #ifdef DEBUG
 #define DEBUG_MSG(L, H, M)	       if ((L) <= DEBUG) {Serial.print("DEBUG> "); Serial.print(H); Serial.print(": "); Serial.println(M);}
