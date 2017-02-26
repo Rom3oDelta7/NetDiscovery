@@ -3,8 +3,9 @@ NetDiscovery is an Arduino library for the ESP8266 that implements a simple UDP 
 This enables devices on a network to find each other and exchange inforamtion to facilitate their communication.
 The simplest example of this is a set of devices that need to commuicate through IP but don't
 initially know the IP addresses of the other devices.
-Eight bytes of application-specific information may be added to the packet payload field for exchange amongst the devices.
-This library can be used to implement a master/slave or peer-to-peer topology for discovery.
+Nine bytes of application-specific information may be added to the packet payload field for exchange amongst the devices.
+This library can be used to implement a master/slave or peer-to-peer topology for discovery. 
+Examples of both topologies are provided.
 
 # Programming Interface
 ## Initialization
@@ -27,7 +28,7 @@ Parameters are as follows:
 Returns __true__ if the multicast group was successfully established, else __false__.
 
 ```C++
-bool NetDiscovery::listen (const ND_PacketType packetType, ND_Packet *packet);
+uint8_t NetDiscovery::listen (ND_Packet *packet);
 ```
 
 Listen for an incoming packet. This function does not wait for a packet to arrive, and returns if one is not immediately available.
@@ -35,10 +36,9 @@ Parameters are as follows:
 
 |Parameter|Purpose|
 |---|---|
-|_packetType_|the type of packet to listen for|
 |_packet_|pointer to the packet received from the sender, which may be an announcement or ack packet
 
-Returns __true__ if a packet of the given type was received, else __false__.
+Returns the packet type (see _NetDiscovery.h_) if a packet was received, else 0.
 
 ```C++
 bool NetDiscovery::announce (const ND_Packet *packet);
