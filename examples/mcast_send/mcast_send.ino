@@ -68,6 +68,7 @@ void loop()
 						}
 					}
 					announced = true;
+					discovery.stop();
 					Serial.println();
 				}
 			}

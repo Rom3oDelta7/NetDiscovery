@@ -139,4 +139,11 @@ bool NetDiscovery::ack (const ND_Packet *packet) {
 	return send(ND_ACK, packet);
 }
 
+/*
+ finish with the UDP multicast session
+*/
+void NetDiscovery::stop ( void ) {
+	_mcast.stop();
+}
+
 

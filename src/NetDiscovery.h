@@ -50,6 +50,7 @@ public:
 	bool    send (const uint8_t packetType, const ND_Packet *packet);
 	bool    announce (const ND_Packet *packet);
 	bool    ack (const ND_Packet *packet);
+	void    stop (void);
 
 
 private:
