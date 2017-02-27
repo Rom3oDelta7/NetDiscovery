@@ -87,7 +87,7 @@ the packet pointer supplied is only for the purposes of copying the user payload
 Returns __true__ if the packet was sent, else __false__.
 
 ```C++
-void NetDiscovery::send (void);
+void NetDiscovery::stop (void);
 ```
 
 Terminates the UDP multicast stream and releases the corresponding resources.
