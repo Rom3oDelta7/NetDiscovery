@@ -111,6 +111,6 @@ Of course, you may also clone this repository and manually install the files if 
 # Copyright Notice
 
 Copyright 2017 Rob Redford
-This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
-To view a copy of this license, visit [BY-NC-SA].
-[BY-NC-SA]: http://creativecommons.org/licenses/by-nc-sa/4.0
+This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License.
+To view a copy of this license, visit [BY-SA].
+[BY-SA]: https://creativecommons.org/licenses/by-sa/4.0/
