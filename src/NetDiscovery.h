@@ -2,8 +2,8 @@
  Network Discovery Library - a simple discovery protocol using UDP multicast
 
  Copyright 2017 Rob Redford
- This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
- To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/.
+ This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0) International License.
+ To view a copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0
 
 */
 
@@ -14,6 +14,10 @@
 #include "Arduino.h"
 #else
 #error This library requires Arduino IDE 1.6.5 or above
+#endif
+
+#ifndef ESP8266
+#error This library is for ESP8266 only
 #endif
 
 #include <ESP8266WiFi.h>
