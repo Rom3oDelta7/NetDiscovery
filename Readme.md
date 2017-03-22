@@ -15,7 +15,7 @@ NetDiscovery discovery;
 ```
 ## Functions
 ```C++
-bool NetDiscovery::begin (const IPAddress multicastIP, const int mcastPort);
+bool NetDiscovery::begin (const IPAddress multicastIP, const int mcastPort, const IPAddress localIP);
 ```
 Initialize the multicast group.
 Parameters are as follows:
@@ -23,7 +23,8 @@ Parameters are as follows:
 |Parameter|Purpose|
 |---|---|
 |_multicastIP_|the UDP multicast group address. This must be of the form 239.X.Y.Z where X, Y, and Z are within the range 1:255.|
-|_mcastPort_|the UDP multicast port number. This must be a number within the range ND_MCAST_PORT_LOW:ND_MCAST_PORT_HIGH.| 
+|_mcastPort_|the UDP multicast port number. This must be a number within the range ND_MCAST_PORT_LOW:ND_MCAST_PORT_HIGH.|
+|_localIP_|the IP address of the current device.|
 
 Returns __true__ if the multicast group was successfully established, else __false__.
 

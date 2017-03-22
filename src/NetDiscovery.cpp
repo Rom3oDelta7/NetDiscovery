@@ -26,13 +26,16 @@ inline bool NetDiscovery::_inRange (const int octet) {
 	return (octet >= 1) && (octet <= 255);
 }
 
-bool NetDiscovery::begin (const IPAddress multicastIP, const int mcastPort) {
+/*
+ set up multicast group
+ */
+bool NetDiscovery::begin (const IPAddress multicastIP, const int mcastPort, const IPAddress localIP) {
 	if ( (multicastIP[0] == 239) && _inRange(multicastIP[1]) && _inRange(multicastIP[2]) && _inRange(multicastIP[3]) ) {
 		if ( (mcastPort >= ND_MCAST_PORT_LOW) && (mcastPort <= ND_MCAST_PORT_HIGH) ) {
 			// init the class
 			_mcastIP = multicastIP;
 			_mcastPort = mcastPort;
-			_localIP = WiFi.localIP();
+			_localIP = localIP;                     // pass as an argument so user can be in STA or AP mode
 			WiFi.macAddress(&_localMAC[0]);
 			// join mcast group
 			if (!_mcast.beginMulticast(_localIP, _mcastIP, _mcastPort)) {
