@@ -19,5 +19,5 @@ announce	KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
-ND_MCAST_PORT_LOW LITERAL1
-ND_MCAST_PORT_HIGH LITERAL1
+ND_MCAST_PORT_LOW	LITERAL1
+ND_MCAST_PORT_HIGH	LITERAL1
